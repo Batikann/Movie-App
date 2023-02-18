@@ -173,3 +173,10 @@ body {
 .change-color{
   color: #ff0000;
 }
+
+.favorites-movie{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  justify-content: center;
+}

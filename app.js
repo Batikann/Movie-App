@@ -3,6 +3,7 @@ const imgPath = "https://image.tmdb.org/t/p/w500";
 const searchInput = document.getElementById("searchbar");
 const main_grid = document.querySelector(".movies-grid");
 const popup_container = document.querySelector(".popup-container");
+const favoritesMovieGrid=document.querySelector('.favorites-movie');
 const noImgPath =
   "https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png";
 
@@ -151,11 +152,18 @@ async function show_popup(card) {
   heart_icon.addEventListener('click',()=>{
     if (heart_icon.classList.contains('change-color')) {
       remove_LS(movie_id)
-      heart_icon.classList.remove('change-color')
+      heart_icon.classList.remove('change-color');
     }
     else{
-      add_to_LS(movie_id)
-      heart_icon.classList.add('change-color');
+      const test=get_LS();
+      if (test.indexOf(movie_id)>-1) {
+        alert('Zaten Ekli');
+      }
+      else{
+        heart_icon.classList.add('change-color');
+        add_to_LS(movie_id)
+      }
+      
     }
     fetch_favorite_movies();
   })
@@ -182,15 +190,34 @@ fetch_favorite_movies();
 async function fetch_favorite_movies() {
   const movies_LS=await get_LS();
   const movies=[];
-  for (let i = 0; i < movies_LS.length-1; i++) {
+  for (let i = 0; i < movies_LS.length; i++) {
     const movie_id=movies_LS[i];
     let movie=await get_movie_by_id(movie_id);
-    add_favorties_to_dom_from_LS(movie);
     movies.push(movie);
-    
+    add_favorties_to_dom_from_LS(movies);
+    console.log(movies);
   }
 }
 
-function add_favorties_to_dom_from_LS(movie) {
-  
+function add_favorties_to_dom_from_LS(movies) {
+  favoritesMovieGrid.innerHTML=movies.map(movie=>{
+    return `
+    <div class="card" data-id="${movie.id}">
+    <div class="img">
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="">
+    </div>
+    <div class="info">
+        <h2>${movie.title}</h2>
+        <div class="single-info">
+            <span>Rate: </span>
+            <span>${movie.vote_average} / 10</span>
+        </div>
+        <div class="single-info">
+            <span>Release Date:</span>
+            <span>${movie.release_date}</span>
+        </div>
+    </div>
+  </div>
+`
+  }).join('')
 }
